@@ -1,13 +1,23 @@
-import express from "express"
+import express, { response } from "express"
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import jwt from "jsonwebtoken"
-import users from "./dummyDB.js"
-import verifyToken from "./middleware.js"
+import users from "../db/dummyDB.js"
+import verifyToken from "../middlewares/middleware.js"
+import { userController } from "../controllers/user.controller.js"
+
+dotenv.config();
 
 const router = express.Router()
 
-dotenv.config();
+router.get("/users", userController.getUsers)
+router.get("/users/:id", userController.getUserById)
+router.post("/users", userController.createUser)
+
+router.delete("/users/:id", userController.deleteUser)
+
+
+// ==================================================================================================
 
 router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
