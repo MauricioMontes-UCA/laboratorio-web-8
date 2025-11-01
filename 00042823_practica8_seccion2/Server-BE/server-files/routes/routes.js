@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken"
 import users from "../db/dummyDB.js"
 import verifyToken from "../middlewares/middleware.js"
 import { userController } from "../controllers/user.controller.js"
+import { authController } from "../controllers/auth.controller.js"
 
 dotenv.config();
 
@@ -13,23 +14,11 @@ const router = express.Router()
 router.get("/users", userController.getUsers)
 router.get("/users/:id", userController.getUserById)
 router.post("/users", userController.createUser)
-
+router.put("/users/:id", userController.updateUser)
 router.delete("/users/:id", userController.deleteUser)
-
+router.post("/signin", authController.signIn)
 
 // ==================================================================================================
-
-router.post("/signin", async (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find((u) => u.email === email);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(400).json({ message: "Invalid credentials" });
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.status(200).json({ token });
-})
 
 router.get("/protected", verifyToken, (req, res) => {
     res.status(200).json({ 

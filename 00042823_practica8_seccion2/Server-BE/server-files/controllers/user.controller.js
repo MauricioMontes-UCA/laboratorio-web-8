@@ -51,7 +51,32 @@ class UserController {
     }
 
     async updateUser(req, res) {
+        try {
+            const id = parseInt(req.params.id)
+            const { name, email, password } = req.body;
+            
+            const data = await userService.putUser(id, name, email, password);
+            console.info("Usuario editado exitosamente.");
+            res.status(200).json({
+                userBefore: {
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    password: data.password
+                },
+                userAfter: {
+                    id: data.id,
+                    name: name,
+                    email: email,
+                    password: password
+                }
+            })
 
+        } 
+        catch (err) {
+            res.status(500).json({ error: err.message });
+            console.error("Error al editar el usuario. No se han guardado cambios.")
+        }
     }
 
     async deleteUser(req, res) {

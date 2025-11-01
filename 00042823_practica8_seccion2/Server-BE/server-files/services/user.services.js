@@ -1,29 +1,33 @@
+import bcrypt from "bcrypt";
+
 import { userRepository } from "../db/user.repository.js";
 
 class UserService {
     async getUsers() {
         const results = await userRepository.selectAll();
-        return results.rows
+        return results
     }
 
     async getUserById(id) {
         const results = await userRepository.selectByID(id);
-        return results.rows
+        return results
     }
 
     async postUser(name, email, password) {
-        const results = await userRepository.insert(name, email, password);
-        return results.rows[0]
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const results = await userRepository.insert(name, email, hashedPassword);
+        return results
     }
 
     async putUser(id, name, email, password){
-        const results = await userRepository.update(id, name, email, password);
-        return results.rows[0]
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const results = await userRepository.update(id, name, email, hashedPassword);
+        return results
     }
 
     async deleteUserById(id) {
         const results = await userRepository.delete(id);
-        return results.rows[0]
+        return results
     }
 }
 
